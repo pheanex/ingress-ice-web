@@ -6,11 +6,63 @@
     <link rel="stylesheet" type="text/css" href="style.css">
   </head>
   <body>
-	<script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js" ></script>
-	<div id="imagediv" class="img">
-	  <img id="image" src="ice-2015-08-31--05-27-49.png.jpg"/>
-	</div>
-	<script src="scroll.js"></script>
+  <div id="imagediv" class="img">
+    <img id="image" src="ice-2015-08-31--05-27-49.png.jpg"/>
+  </div>
+
+
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+  <script>
+    var image_list;
+    var image_list_length;
+    var image_iterator = 0;
+    var stepsize = 5;
+    var image_width;
+    $.ajax({
+      url: 'images.json',
+      type: 'GET',
+      dataType: 'json',
+      success: function(images){
+        image_list = images["images"];
+        image_list_length = image_list.length;
+        image_width = $("body").innerWidth();
+        stepsize = image_width/image_list_length;
+      }
+    });
+
+    var last_mouse_xaxis = 0;
+    function increment_image_iterator(){
+      image_iterator++;
+      if(image_iterator > image_list_length){
+        image_iterator = 0;
+      }
+    }
+    function decrement_image_iterator(){
+      image_iterator--;
+      if(image_iterator < 0){
+        image_iterator = image_list_length - 1;
+      }
+    }
+
+    $(document).ready(function() {
+      $('#image').on("mousemove", (function(event) {
+        if(event.pageX > last_mouse_xaxis + stepsize){
+          // Scroll forward
+          console.log("Scroll forward");
+          increment_image_iterator();
+          $(this).attr("src",image_list[image_iterator]);
+          last_mouse_xaxis = event.pageX;
+        }else if (event.pageX < last_mouse_xaxis - stepsize){
+          // Scroll backwards
+          console.log("Scroll back");
+          decrement_image_iterator();
+          $(this).attr("src",image_list[image_iterator]);
+          last_mouse_xaxis = event.pageX;
+        }
+      }));
+    });
+  </script>
   </body>
 </html>
+
 
