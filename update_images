@@ -1,0 +1,26 @@
+#!/bin/bash
+
+# Remove files older than 1day
+find . -type f -mtime +1 -print
+
+# Convert png to jpg
+for file in ./*.png
+do
+	convert "$file" "$file".jpg && rm "$file"
+done
+
+# Write images-JSON
+json_filename=images.json
+echo '{"images":[' > "$json_filename"
+first="yes"
+for file in ./*.jpg
+do
+	if [[ "$first" ]]
+	then
+		unset first
+	else
+		echo ,  >> "$json_filename"
+	fi
+	echo -n \""$file"\" >> "$json_filename"
+done
+echo ']}' >> "$json_filename"
